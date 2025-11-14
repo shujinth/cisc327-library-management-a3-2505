@@ -120,7 +120,6 @@ def test_refund_invalid_amount(mocker, amount):
 
 
 def test_refund_gateway_error():
-    """Network or gateway error during refund → should handle exception gracefully"""
     mock_gateway = Mock(spec=PaymentGateway)
     mock_gateway.refund_payment.side_effect = Exception("Network error")
 
