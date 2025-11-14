@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>🧑🏻‍🏫 Patron Status Report</h2>
+<p>Show relevant information involving user, including late fees, current borrowing list, and borrowing history.</p>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="patron_id">Patron ID *</label>
+        <input id="patron_id" maxlength="6" name="patron_id" pattern="[0-9]{6}" required type="text"
+               value="{{ request.form.patron_id if request.form.patron_id else '' }}">
+        <small style="color: #666;">6-digit library card number</small>
+    </div>
+    <button type="submit" class="btn">View Status</button>
+</form>
+
+{% if report %}
+<h3>Patron ID: {{ report.patron_id }}</h3>
+<p><strong>Total Books Borrowed:</strong> {{ report.borrow_count }}</p>
+<p><strong>Total Late Fees:</strong> ${{ "%.2f"|format(report.total_late_fees) }}</p>
+
+<h4>Currently Borrowed Books</h4>
+{% if report.currently_borrowed %}
+<ul>
+    {% for b in report.currently_borrowed %}
+    <li>
+        {{ b.title }} by {{ b.author }} — Due:
+        {% if b.due_date is string %}
+            {{ b.due_date }}
+        {% else %}
+            {{ b.due_date.strftime('%Y-%m-%d') }}
+        {% endif %}
+        {% if b.is_overdue %}<strong style="color:red;">(Overdue)</strong>{% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No currently borrowed books.</p>
+{% endif %}
+
+<h4>Borrowing History</h4>
+{% if report.borrowing_history %}
+<ul>
+    {% for item in report.borrowing_history %}
+    <li>
+        {{ item.title }} —
+        Borrowed: {{ item.borrow_date.strftime("%Y-%m-%d") }},
+        Returned:
+        {% if item.return_date %}
+            {{ item.return_date.strftime("%Y-%m-%d") }}
+        {% else %}
+            Not returned
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No borrowing history found.</p>
+{% endif %}
+{% endif %}
+{% endblock %}
