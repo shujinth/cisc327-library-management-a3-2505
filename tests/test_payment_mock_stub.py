@@ -70,16 +70,16 @@ def test_pay_late_fees_zero_late_fee(mocker):
 
 
 def test_pay_late_fees_network_error(mocker):
-    mocker.patch("services.library_service.calculate_late_fee_for_book", return_value=10)
-    mocker.patch("services.library_service.get_book_by_id", return_value={"id": 1})
+    mocker.patch("services.library_service.calculate_late_fee_for_book", return_value={"fee_amount": 10.0})
+    mocker.patch("services.library_service.get_book_by_id",return_value={"id": 1, "title": "Fake Book"})
 
     mock_gateway = Mock(spec=PaymentGateway)
     mock_gateway.process_payment.side_effect = Exception("Network error")
 
-    result = pay_late_fees("123456", 1, mock_gateway)
-    assert result is False
-    assert "Payment processing error"
-    mock_gateway.process_payment.assert_called_once_with(1, 10)
+    success, msg, txn_id = pay_late_fees("123456", 1, mock_gateway)
+    assert success is False
+    assert "Payment processing error" in msg
+    mock_gateway.process_payment.assert_called_once()
 
 
 # tests for refund_late_fee_payment()
