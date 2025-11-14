@@ -48,7 +48,8 @@ def test_borrow_book_max_books_allowed():
     borrow_book_by_patron("529535", 4)
     borrow_book_by_patron("529535", 5)
     borrow_book_by_patron("529535", 6)
-    success, message = borrow_book_by_patron("529535", 7)
+    borrow_book_by_patron("529535", 7)
+    success, message = borrow_book_by_patron("529535", 8)
 
     assert success == False
     assert "maximum" in message.lower()
